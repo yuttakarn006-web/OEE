@@ -4,15 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OEE SCADA System</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js สำหรับวาดกราฟ -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* CSS Reset & Variables */
         :root {
             --bg-body: #f3f4f6;
             --sidebar-bg: #111827;
@@ -25,6 +21,7 @@
             --success: #16a34a;
             --warning: #ca8a04;
             --danger: #dc2626;
+            --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
         }
 
         * {
@@ -34,6 +31,10 @@
             font-family: 'Inter', sans-serif;
         }
 
+        html, body {
+            height: 100%;
+        }
+
         body {
             background-color: var(--bg-body);
             color: var(--text-dark);
@@ -41,7 +42,6 @@
             min-height: 100vh;
         }
 
-        /* 1. Sidebar Styles */
         .sidebar {
             width: 240px;
             background-color: var(--sidebar-bg);
@@ -86,13 +86,12 @@
             cursor: pointer;
         }
 
-        .sidebar-menu li a:hover, 
+        .sidebar-menu li a:hover,
         .sidebar-menu li.active a {
             background-color: var(--sidebar-active);
             color: #ffffff;
         }
 
-        /* 2. Main Layout Structure */
         .wrapper {
             flex: 1;
             display: flex;
@@ -100,7 +99,6 @@
             min-width: 0;
         }
 
-        /* Header Styles */
         .header {
             background-color: var(--card-bg);
             padding: 15px 30px;
@@ -112,7 +110,7 @@
 
         .search-box {
             position: relative;
-            width: 320px;
+            width: min(320px, 55vw);
         }
 
         .search-box input {
@@ -159,7 +157,6 @@
             color: #4b5563;
         }
 
-        /* Content Sections */
         .content {
             padding: 25px 30px;
             flex: 1;
@@ -178,10 +175,9 @@
             display: flex;
         }
 
-        /* 3. Summary Cards Grid */
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 20px;
         }
 
@@ -193,6 +189,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            box-shadow: var(--shadow);
         }
 
         .card-icon {
@@ -229,7 +226,6 @@
         .trend-up { color: var(--success); }
         .trend-down { color: var(--danger); }
 
-        /* Dashboard Grid Layout */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -241,6 +237,7 @@
             border-radius: 12px;
             border: 1px solid var(--border-color);
             padding: 20px;
+            box-shadow: var(--shadow);
         }
 
         .card-header {
@@ -255,7 +252,6 @@
             font-weight: 700;
         }
 
-        /* Pure CSS Table Styling */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -277,7 +273,6 @@
             vertical-align: middle;
         }
 
-        /* Status Badges */
         .badge {
             display: inline-block;
             padding: 4px 10px;
@@ -290,12 +285,10 @@
         .badge-warning { background-color: #fef9c3; color: #a16207; }
         .badge-danger { background-color: #fee2e2; color: #b91c1c; }
 
-        /* OEE Badges Colors */
         .oee-badge-green { background-color: #16a34a; color: #ffffff; }
         .oee-badge-yellow { background-color: #ca8a04; color: #ffffff; }
         .oee-badge-red { background-color: #dc2626; color: #ffffff; }
 
-        /* Action Edit Button */
         .btn-edit {
             background-color: #ffffff;
             color: var(--primary);
@@ -312,22 +305,22 @@
             border-color: var(--primary);
         }
 
-        /* Modal Overlay Styling */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            inset: 0;
             background-color: rgba(0, 0, 0, 0.5);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            padding: 20px;
         }
         .modal-overlay.active {
             display: flex;
         }
         .modal-container {
             background-color: #ffffff;
-            width: 520px;
+            width: min(520px, 100%);
             border-radius: 12px;
             padding: 24px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
@@ -378,7 +371,6 @@
             background-color: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;
         }
 
-        /* Top List Elements */
         .top-list {
             display: flex;
             flex-direction: column;
@@ -408,7 +400,6 @@
             font-size: 1rem;
         }
 
-        /* Footer */
         .footer {
             background-color: var(--card-bg);
             padding: 15px 30px;
@@ -433,11 +424,63 @@
             position: relative;
             height: 220px;
         }
+
+        @media (max-width: 980px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .sidebar-menu {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                padding: 15px 15px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .header-user {
+                justify-content: space-between;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
-
-    <!-- 1. SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <i class="fa-solid fa-cube"></i>
@@ -455,11 +498,10 @@
     </aside>
 
     <div class="wrapper">
-        <!-- 2. HEADER -->
         <header class="header">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Search machine, line, or logs...">
+                <input type="text" id="searchInput" placeholder="Search machine, line, or logs...">
             </div>
             <div class="header-user">
                 <i class="fa-regular fa-bell" style="font-size: 1.2rem; color: var(--text-muted); cursor: pointer;"></i>
@@ -471,42 +513,39 @@
             </div>
         </header>
 
-        <!-- MAIN CONTENT CONTAINER -->
         <main class="content">
-            
-            <!-- VIEW 1: DASHBOARD -->
             <div id="view-dashboard" class="section-view active">
                 <div class="summary-grid">
                     <div class="summary-card">
                         <div class="card-icon icon-blue"><i class="fa-solid fa-gauge-high"></i></div>
                         <div class="card-info">
                             <div class="label">Overall OEE</div>
-                            <div class="value" id="sumOEE">82.4%</div>
-                            <div class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> 3.2% vs last shift</div>
+                            <div class="value" id="sumOEE">0.0%</div>
+                            <div class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> Updated live</div>
                         </div>
                     </div>
                     <div class="summary-card">
                         <div class="card-icon icon-green"><i class="fa-solid fa-clock"></i></div>
                         <div class="card-info">
                             <div class="label">Availability (A)</div>
-                            <div class="value" id="sumAvail">91.5%</div>
-                            <div class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> 1.8% target met</div>
+                            <div class="value" id="sumAvail">0.0%</div>
+                            <div class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> Current shift</div>
                         </div>
                     </div>
                     <div class="summary-card">
                         <div class="card-icon icon-purple"><i class="fa-solid fa-bolt"></i></div>
                         <div class="card-info">
                             <div class="label">Performance (P)</div>
-                            <div class="value" id="sumPerf">94.2%</div>
-                            <div class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> 2.4% speed gain</div>
+                            <div class="value" id="sumPerf">0.0%</div>
+                            <div class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> Live rate</div>
                         </div>
                     </div>
                     <div class="summary-card">
                         <div class="card-icon icon-red"><i class="fa-solid fa-check-double"></i></div>
                         <div class="card-info">
                             <div class="label">Quality Rate (Q)</div>
-                            <div class="value" id="sumQual">95.6%</div>
-                            <div class="trend trend-down"><i class="fa-solid fa-arrow-down"></i> 0.5% scrap rate</div>
+                            <div class="value" id="sumQual">0.0%</div>
+                            <div class="trend trend-down"><i class="fa-solid fa-arrow-down"></i> Scrap checked</div>
                         </div>
                     </div>
                 </div>
@@ -515,9 +554,9 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="card-title">OEE Performance Trend</div>
-                            <select style="padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
-                                <option>Last 7 Days</option>
-                                <option>This Shift</option>
+                            <select id="trendRange" style="padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                                <option value="7">Last 7 Days</option>
+                                <option value="shift" selected>This Shift</option>
                             </select>
                         </div>
                         <div style="height: 230px;">
@@ -552,9 +591,7 @@
                                         <th style="text-align: center;">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="machineTableBody">
-                                    <!-- เรนเดอร์ด้วย JavaScript -->
-                                </tbody>
+                                <tbody id="machineTableBody"></tbody>
                             </table>
                         </div>
                     </div>
@@ -598,7 +635,6 @@
                 </div>
             </div>
 
-            <!-- VIEW 2: ANALYTICS -->
             <div id="view-analytics" class="section-view">
                 <div class="card">
                     <div class="card-header">
@@ -611,7 +647,6 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: MACHINES -->
             <div id="view-machines" class="section-view">
                 <div class="card">
                     <div class="card-header">
@@ -666,7 +701,6 @@
                 </div>
             </div>
 
-            <!-- VIEW 4: DOWNTIME -->
             <div id="view-downtime" class="section-view">
                 <div class="card">
                     <div class="card-header">
@@ -713,7 +747,6 @@
                 </div>
             </div>
 
-            <!-- VIEW 5: ENERGY POWER -->
             <div id="view-energy" class="section-view">
                 <div class="card">
                     <div class="card-header">
@@ -760,7 +793,6 @@
                 </div>
             </div>
 
-            <!-- VIEW 6: NOTIFICATIONS -->
             <div id="view-notifications" class="section-view">
                 <div class="card">
                     <div class="card-header">
@@ -799,7 +831,6 @@
                 </div>
             </div>
 
-            <!-- VIEW 7: SETTINGS -->
             <div id="view-settings" class="section-view">
                 <div class="card">
                     <div class="card-header">
@@ -818,10 +849,8 @@
                     </div>
                 </div>
             </div>
-
         </main>
 
-        <!-- 3. FOOTER -->
         <footer class="footer">
             <div>© 2026 Esze Automation. All rights reserved.</div>
             <div class="footer-links">
@@ -832,39 +861,38 @@
         </footer>
     </div>
 
-    <!-- MODAL EDIT POPUP -->
-    <div class="modal-overlay" id="editModal">
-        <div class="modal-container">
+    <div class="modal-overlay" id="editModal" aria-hidden="true">
+        <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="modalMachineTitle">
             <div class="modal-header">
                 <span id="modalMachineTitle">Edit Inputs: CNC Milling Station 01</span>
-                <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" class="modal-close" aria-label="Close modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="editForm" onsubmit="event.preventDefault(); saveMachineData();">
                 <input type="hidden" id="editMachineId">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Shift Duration (Hours)</label>
-                        <input type="number" step="0.1" id="inputShiftHours" required>
+                        <label for="inputShiftHours">Shift Duration (Hours)</label>
+                        <input type="number" step="0.1" min="0" id="inputShiftHours" required>
                     </div>
                     <div class="form-group">
-                        <label>Ideal Cycle Time (sec/pcs)</label>
-                        <input type="number" step="0.1" id="inputIdealCycle" required>
+                        <label for="inputIdealCycle">Ideal Cycle Time (sec/pcs)</label>
+                        <input type="number" step="0.1" min="0" id="inputIdealCycle" required>
                     </div>
                     <div class="form-group">
-                        <label>Planned Downtime (min)</label>
-                        <input type="number" id="inputPlannedDown" required>
+                        <label for="inputPlannedDown">Planned Downtime (min)</label>
+                        <input type="number" min="0" id="inputPlannedDown" required>
                     </div>
                     <div class="form-group">
-                        <label>Unplanned Downtime (min)</label>
-                        <input type="number" id="inputUnplannedDown" required>
+                        <label for="inputUnplannedDown">Unplanned Downtime (min)</label>
+                        <input type="number" min="0" id="inputUnplannedDown" required>
                     </div>
                     <div class="form-group">
-                        <label>Total Produced Parts</label>
-                        <input type="number" id="inputTotalCount" required>
+                        <label for="inputTotalCount">Total Produced Parts</label>
+                        <input type="number" min="0" id="inputTotalCount" required>
                     </div>
                     <div class="form-group">
-                        <label>Good Quality Parts</label>
-                        <input type="number" id="inputGoodCount" required>
+                        <label for="inputGoodCount">Good Quality Parts</label>
+                        <input type="number" min="0" id="inputGoodCount" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -875,86 +903,112 @@
         </div>
     </div>
 
-    <!-- Plain JavaScript (Vanilla JS) -->
     <script>
-        // Initial Dataset
         let machinesData = [
             { id: "M01", name: "CNC Milling Station 01", shift_hours: 8, planned_downtime_min: 30, unplanned_downtime_min: 45, ideal_cycle_time_sec: 12, total_count: 1800, good_count: 1720 },
             { id: "M02", name: "Robotic Assembly Line A", shift_hours: 12, planned_downtime_min: 60, unplanned_downtime_min: 20, ideal_cycle_time_sec: 5, total_count: 7000, good_count: 6850 },
             { id: "M03", name: "Automatic Packaging Unit 03", shift_hours: 8, planned_downtime_min: 30, unplanned_downtime_min: 110, ideal_cycle_time_sec: 8, total_count: 2200, good_count: 2050 }
         ];
 
-        // OEE Calculation Algorithm
+        const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+        function safeNumber(value, fallback = 0) {
+            const num = Number(value);
+            return Number.isFinite(num) ? num : fallback;
+        }
+
         function calculateOEE(m) {
-            const shiftMin = m.shift_hours * 60;
-            const plannedProdTime = Math.max(0, shiftMin - m.planned_downtime_min);
-            const runTime = Math.max(0, plannedProdTime - m.unplanned_downtime_min);
+            const shiftHours = Math.max(0, safeNumber(m.shift_hours, 0));
+            const plannedDowntimeMin = Math.max(0, safeNumber(m.planned_downtime_min, 0));
+            const unplannedDowntimeMin = Math.max(0, safeNumber(m.unplanned_downtime_min, 0));
+            const idealCycleSec = Math.max(0, safeNumber(m.ideal_cycle_time_sec, 0));
+            const totalCount = Math.max(0, safeNumber(m.total_count, 0));
+            let goodCount = Math.max(0, safeNumber(m.good_count, 0));
+            goodCount = Math.min(goodCount, totalCount);
 
-            const availability = plannedProdTime > 0 ? (runTime / plannedProdTime) : 0;
-            
-            const idealTimeMin = (m.ideal_cycle_time_sec * m.total_count) / 60;
-            let performance = runTime > 0 ? (idealTimeMin / runTime) : 0;
-            if (performance > 1.0) performance = 1.0;
+            const shiftMin = shiftHours * 60;
+            const plannedProdTime = Math.max(0, shiftMin - plannedDowntimeMin);
+            const runTime = Math.max(0, plannedProdTime - unplannedDowntimeMin);
 
-            const quality = m.total_count > 0 ? (m.good_count / m.total_count) : 0;
+            const availability = plannedProdTime > 0 ? runTime / plannedProdTime : 0;
+
+            const idealTimeMin = idealCycleSec > 0 && totalCount > 0 ? (idealCycleSec * totalCount) / 60 : 0;
+            let performance = runTime > 0 ? idealTimeMin / runTime : 0;
+            performance = clamp(performance, 0, 1);
+
+            const quality = totalCount > 0 ? goodCount / totalCount : 0;
             const oee = availability * performance * quality;
 
             return {
                 ...m,
-                availability_pct: (availability * 100).toFixed(1),
-                performance_pct: (performance * 100).toFixed(1),
-                quality_pct: (quality * 100).toFixed(1),
-                oee_pct: (oee * 100).toFixed(1)
+                availability_pct: availability * 100,
+                performance_pct: performance * 100,
+                quality_pct: quality * 100,
+                oee_pct: oee * 100
             };
         }
 
-        // Render Machine Table
-        function renderTable() {
-            const tbody = document.getElementById('machineTableBody');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-
-            let sumA = 0, sumP = 0, sumQ = 0, sumOEE = 0;
-
-            machinesData.forEach(raw => {
-                const m = calculateOEE(raw);
-                sumA += parseFloat(m.availability_pct);
-                sumP += parseFloat(m.performance_pct);
-                sumQ += parseFloat(m.quality_pct);
-                sumOEE += parseFloat(m.oee_pct);
-
-                let badgeClass = 'oee-badge-red';
-                if (m.oee_pct >= 85) badgeClass = 'oee-badge-green';
-                else if (m.oee_pct >= 65) badgeClass = 'oee-badge-yellow';
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${m.id}</b></td>
-                    <td>${m.name}</td>
-                    <td style="text-align: center;">${m.availability_pct}%</td>
-                    <td style="text-align: center;">${m.performance_pct}%</td>
-                    <td style="text-align: center;">${m.quality_pct}%</td>
-                    <td style="text-align: center;"><span class="badge ${badgeClass}">${m.oee_pct}%</span></td>
-                    <td style="text-align: center;">
-                        <button class="btn-edit" onclick="openModal('${m.id}')">
-                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // Update Summary Cards
-            const len = machinesData.length;
-            if(len > 0) {
-                document.getElementById('sumAvail').innerText = (sumA / len).toFixed(1) + '%';
-                document.getElementById('sumPerf').innerText = (sumP / len).toFixed(1) + '%';
-                document.getElementById('sumQual').innerText = (sumQ / len).toFixed(1) + '%';
-                document.getElementById('sumOEE').innerText = (sumOEE / len).toFixed(1) + '%';
-            }
+        function formatPercent(value) {
+            return `${Number(value).toFixed(1)}%`;
         }
 
-        // Modal Controls
+        function getOeeBadgeClass(value) {
+            const numeric = Number(value) || 0;
+            if (numeric >= 85) return 'oee-badge-green';
+            if (numeric >= 65) return 'oee-badge-yellow';
+            return 'oee-badge-red';
+        }
+
+        function updateSummaryCards() {
+            const values = machinesData.map(m => calculateOEE(m));
+            const avg = (arr) => values.length ? arr.reduce((sum, v) => sum + v, 0) / values.length : 0;
+
+            const availability = avg(values.map(v => v.availability_pct));
+            const performance = avg(values.map(v => v.performance_pct));
+            const quality = avg(values.map(v => v.quality_pct));
+            const oee = avg(values.map(v => v.oee_pct));
+
+            document.getElementById('sumAvail').innerText = formatPercent(availability);
+            document.getElementById('sumPerf').innerText = formatPercent(performance);
+            document.getElementById('sumQual').innerText = formatPercent(quality);
+            document.getElementById('sumOEE').innerText = formatPercent(oee);
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('machineTableBody');
+            if (!tbody) return;
+
+            const filtered = machinesData.filter(machine => {
+                const searchValue = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+                if (!searchValue) return true;
+                return (
+                    machine.id.toLowerCase().includes(searchValue) ||
+                    machine.name.toLowerCase().includes(searchValue)
+                );
+            });
+
+            tbody.innerHTML = filtered.map(raw => {
+                const m = calculateOEE(raw);
+                return `
+                    <tr>
+                        <td><b>${m.id}</b></td>
+                        <td>${m.name}</td>
+                        <td style="text-align: center;">${formatPercent(m.availability_pct)}</td>
+                        <td style="text-align: center;">${formatPercent(m.performance_pct)}</td>
+                        <td style="text-align: center;">${formatPercent(m.quality_pct)}</td>
+                        <td style="text-align: center;"><span class="badge ${getOeeBadgeClass(m.oee_pct)}">${formatPercent(m.oee_pct)}</span></td>
+                        <td style="text-align: center;">
+                            <button class="btn-edit" type="button" onclick="openModal('${m.id}')">
+                                <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            updateSummaryCards();
+        }
+
         function openModal(id) {
             const machine = machinesData.find(m => m.id === id);
             if (!machine) return;
@@ -968,109 +1022,197 @@
             document.getElementById('inputTotalCount').value = machine.total_count;
             document.getElementById('inputGoodCount').value = machine.good_count;
 
-            document.getElementById('editModal').classList.add('active');
+            const modal = document.getElementById('editModal');
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
         }
 
         function closeModal() {
-            document.getElementById('editModal').classList.remove('active');
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
         }
 
         function saveMachineData() {
             const id = document.getElementById('editMachineId').value;
             const machine = machinesData.find(m => m.id === id);
+            if (!machine) return;
 
-            if (machine) {
-                machine.shift_hours = parseFloat(document.getElementById('inputShiftHours').value) || 0;
-                machine.ideal_cycle_time_sec = parseFloat(document.getElementById('inputIdealCycle').value) || 0;
-                machine.planned_downtime_min = parseFloat(document.getElementById('inputPlannedDown').value) || 0;
-                machine.unplanned_downtime_min = parseFloat(document.getElementById('inputUnplannedDown').value) || 0;
-                machine.total_count = parseInt(document.getElementById('inputTotalCount').value) || 0;
-                machine.good_count = parseInt(document.getElementById('inputGoodCount').value) || 0;
+            const shiftHours = safeNumber(document.getElementById('inputShiftHours').value, 0);
+            const idealCycle = safeNumber(document.getElementById('inputIdealCycle').value, 0);
+            const plannedDown = safeNumber(document.getElementById('inputPlannedDown').value, 0);
+            const unplannedDown = safeNumber(document.getElementById('inputUnplannedDown').value, 0);
+            const totalCount = safeNumber(document.getElementById('inputTotalCount').value, 0);
+            let goodCount = safeNumber(document.getElementById('inputGoodCount').value, 0);
 
-                renderTable();
-                closeModal();
+            if (shiftHours <= 0 || idealCycle < 0 || plannedDown < 0 || unplannedDown < 0 || totalCount < 0) {
+                alert('Invalid input values. Please ensure shift hours > 0 and downtime/parts are non-negative.');
+                return;
+            }
+
+            if (goodCount > totalCount) {
+                alert('Good quality parts cannot exceed total produced parts.');
+                return;
+            }
+
+            machine.shift_hours = shiftHours;
+            machine.ideal_cycle_time_sec = idealCycle;
+            machine.planned_downtime_min = plannedDown;
+            machine.unplanned_downtime_min = unplannedDown;
+            machine.total_count = totalCount;
+            machine.good_count = goodCount;
+
+            renderTable();
+            closeModal();
+        }
+
+        function buildTrendDataset() {
+            const trendValues = [78, 82, 80, 85, 81, 84, 86];
+            const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            return { labels, trendValues };
+        }
+
+        function buildDonutData() {
+            const total = 100;
+            const availabilityLoss = 12;
+            const performanceLoss = 8;
+            const qualityLoss = 5;
+            return {
+                labels: ['Availability Loss', 'Performance Loss', 'Quality Loss'],
+                data: [availabilityLoss, performanceLoss, qualityLoss],
+                total: total,
+            };
+        }
+
+        function initCharts() {
+            const trend = buildTrendDataset();
+            const donut = buildDonutData();
+
+            const lineCtx = document.getElementById('lineChart');
+            const donutCtx = document.getElementById('donutChart');
+            const analyticsCtx = document.getElementById('analyticsChart');
+
+            if (lineCtx) {
+                new Chart(lineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: trend.labels,
+                        datasets: [{
+                            label: 'OEE',
+                            data: trend.trendValues,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                            tension: 0.35,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 60,
+                                max: 100,
+                                ticks: { callback: (value) => `${value}%` }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (donutCtx) {
+                new Chart(donutCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: donut.labels,
+                        datasets: [{
+                            data: donut.data,
+                            backgroundColor: ['#2563eb', '#16a34a', '#f59e0b'],
+                            borderWidth: 0,
+                            cutout: '60%'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { boxWidth: 12, usePointStyle: true }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (analyticsCtx) {
+                new Chart(analyticsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['A', 'P', 'Q', 'OEE'],
+                        datasets: [{
+                            label: 'Performance',
+                            data: [91.5, 94.2, 95.6, 82.4],
+                            backgroundColor: ['#2563eb', '#16a34a', '#9333ea', '#f59e0b'],
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 60,
+                                max: 100,
+                                ticks: { callback: (value) => `${value}%` }
+                            }
+                        }
+                    }
+                });
             }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Sidebar Navigation Tab Logic
+            renderTable();
+            initCharts();
+
             const menuItems = document.querySelectorAll('.sidebar-menu li');
             const views = document.querySelectorAll('.section-view');
 
             menuItems.forEach(item => {
-                item.addEventListener('click', function(e) {
+                item.addEventListener('click', function (e) {
                     e.preventDefault();
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
 
-                    views.forEach(v => v.classList.remove('active'));
                     const targetId = this.getAttribute('data-target');
-                    const targetView = document.getElementById(targetId);
-                    if (targetView) targetView.classList.add('active');
+
+                    menuItems.forEach(li => li.classList.toggle('active', li === this));
+                    views.forEach(view => {
+                        view.classList.toggle('active', view.id === targetId);
+                    });
                 });
             });
 
-            // Initialize Table
-            renderTable();
+            document.getElementById('searchInput').addEventListener('input', renderTable);
 
-            // Line Chart: OEE Trend
-            const ctxLine = document.getElementById('lineChart').getContext('2d');
-            new Chart(ctxLine, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                        label: 'OEE Score (%)',
-                        data: [72, 78, 81, 79, 85, 82, 88],
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 2,
-                        pointRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: false, min: 50, max: 100 } }
+            document.getElementById('editModal').addEventListener('click', function (event) {
+                if (event.target === this) {
+                    closeModal();
                 }
             });
 
-            // Donut Chart: Loss Breakdown
-            const ctxDonut = document.getElementById('donutChart').getContext('2d');
-            new Chart(ctxDonut, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Good Production', 'Availability Loss', 'Performance Loss', 'Quality Defect'],
-                    datasets: [{
-                        data: [82, 8, 6, 4],
-                        backgroundColor: ['#22c55e', '#ef4444', '#f59e0b', '#a855f7']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } }
-                }
-            });
-
-            // Bar Chart: Analytics
-            const ctxAnalytics = document.getElementById('analyticsChart').getContext('2d');
-            new Chart(ctxAnalytics, {
-                type: 'bar',
-                data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    datasets: [
-                        { label: 'Availability (%)', data: [89, 90, 92, 91.5], backgroundColor: '#16a34a' },
-                        { label: 'Performance (%)', data: [93, 91, 94, 94.2], backgroundColor: '#2563eb' },
-                        { label: 'Quality (%)', data: [95, 96, 95.5, 95.6], backgroundColor: '#9333ea' }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100 } }
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeModal();
                 }
             });
         });
